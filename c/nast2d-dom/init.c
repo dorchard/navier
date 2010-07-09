@@ -4,6 +4,15 @@
 #include <fcntl.h>
 #include "datadef.h"
 
+/* Modified slightly by D. Orchard (2010) from the classic code from: 
+
+    Michael Griebel, Thomas Dornseifer, Tilman Neunhoeffer,
+    Numerical Simulation in Fluid Dynamics,
+    SIAM, 1998.
+
+    http://people.sc.fsu.edu/~jburkardt/cpp_src/nast2d/nast2d.html
+
+*/
 
 /* Initialize the flag array, marking any obstacle cells and the edge cells
  * as boundaries. The cells adjacent to boundary cells have their relevant

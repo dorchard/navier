@@ -10,11 +10,13 @@
 #include "init.h"
 #include "simulation.h"
 
-/* Based on 
+/* Modified slightly by D. Orchard (2010) from the classic code from: 
 
     Michael Griebel, Thomas Dornseifer, Tilman Neunhoeffer,
     Numerical Simulation in Fluid Dynamics,
     SIAM, 1998.
+
+    http://people.sc.fsu.edu/~jburkardt/cpp_src/nast2d/nast2d.html
 
 */
 

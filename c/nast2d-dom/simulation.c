@@ -11,6 +11,16 @@
 extern int *ileft, *iright;
 extern int nprocs, proc;
 
+/* Modified slightly by D. Orchard (2010) from the classic code from: 
+
+    Michael Griebel, Thomas Dornseifer, Tilman Neunhoeffer,
+    Numerical Simulation in Fluid Dynamics,
+    SIAM, 1998.
+
+    http://people.sc.fsu.edu/~jburkardt/cpp_src/nast2d/nast2d.html
+
+*/
+
 /* Computation of tentative velocity field (f, g) */
 void compute_tentative_velocity(double **u, double **v, double **f, double **g,
     char **flag, int imax, int jmax, double del_t, double delx, double dely,
