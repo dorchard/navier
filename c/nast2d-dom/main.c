@@ -96,34 +96,23 @@ int main(int argc, char *argv[])
      }
 
     init_flag(flag, imax, jmax, delx, dely, &ibound);
-    printf("check flag = %ld\n", simplest_checksum_char(flag, imax, jmax));
     apply_boundary_conditions(u, v, flag, imax, jmax, ui, vi);
     
     // Main loop
 
     for (t = 0.0; t < t_end; t += del_t, iters++) {
-        printf("check u = %f\n", simplest_checksum(u, imax, jmax));
-        printf("check v = %f\n", simplest_checksum(v, imax, jmax));
         set_timestep_interval(&del_t, imax, jmax, delx, dely, u, v, Re, tau);
 
         ifluid = (imax * jmax) - ibound;
 
-	printf("check f = %f\n", simplest_checksum(f, imax, jmax));
-        printf("check g = %f\n", simplest_checksum(g, imax, jmax));
         compute_tentative_velocity(u, v, f, g, flag, imax, jmax,
             del_t, delx, dely, gamma, Re);
-	printf("check f' = %f\n", simplest_checksum(f, imax, jmax));
-        printf("check g' = %f\n", simplest_checksum(g, imax, jmax));
 
-	printf("check rhs = %f\n", simplest_checksum(rhs, imax, jmax));
         compute_rhs(f, g, rhs, flag, imax, jmax, del_t, delx, dely);
-	printf("check rhs' = %f\n", simplest_checksum(rhs, imax, jmax));
 
         if (ifluid > 0) {
-	    printf("check p = %f\n", simplest_checksum(p, imax, jmax));
             itersor = poisson(p, rhs, flag, imax, jmax, delx, dely,
                         eps, itermax, omega, &res, ifluid);
-	    printf("check p' = %f\n", simplest_checksum(p, imax, jmax));
         } else {
             itersor = 0;
         }
@@ -133,12 +122,8 @@ int main(int argc, char *argv[])
 
 	
         update_velocity(u, v, f, g, p, flag, imax, jmax, del_t, delx, dely);
-	printf("check u' = %f\n", simplest_checksum(u, imax, jmax));
-	printf("check v' = %f\n", simplest_checksum(v, imax, jmax));
 
         apply_boundary_conditions(u, v, flag, imax, jmax, ui, vi);
-	printf("check u'' = %f\n", simplest_checksum(u, imax, jmax));
-	printf("check v'' = %f\n", simplest_checksum(v, imax, jmax));
 
 	if (output && (iters % output_frequency == 0)) {
 	  write_ppm(u, v, p, flag, imax, jmax, xlength, ylength, outname,
@@ -156,6 +141,8 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+// Used for comparing computations when debugging other implementations
 
 unsigned int simplest_checksum_char(char** in, int imax, int jmax) {
   unsigned int checksum = 0;

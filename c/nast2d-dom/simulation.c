@@ -78,8 +78,6 @@ void compute_tentative_velocity(double **u, double **v, double **f, double **g,
         }
     }
 
-    printf("check ig = %.10f\n", (simplest_checksum(g,imax,jmax)));
-
     /* f & g at external boundaries */
     for (j=1; j<=jmax; j++) {
         f[0][j]    = u[0][j];
@@ -135,10 +133,8 @@ int poisson(double **p, double **rhs, char **flag, int imax, int jmax,
     }
    
     p0 = sqrt(p0/ifull);
-    printf("p0 = %.8f\n", p0);
     if (p0 < 0.0001) { p0 = 1.0; }
 
-    printf("p0' = %.8f\n", p0);
 
     /* Red/Black SOR-iteration */
     for (iter = 0; iter < itermax; iter++) {
