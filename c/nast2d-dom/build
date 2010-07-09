@@ -1,0 +1,1 @@
+gcc main.c alloc.c init.c boundary.c simulation.c output.c -o nast2d -lm
