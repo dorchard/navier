@@ -20,11 +20,11 @@
 >   let output_name = if ((length argv) >= 1) then argv!!0 else "foo"
 >       output_freq = if ((length argv) >= 2) then read $ argv!!1 else 1
 >       dims  = Z :. (jmax+2) :. (imax+2)
->       u = force $ fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) ui)
->       v = force $ fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) vi)
->       f = force $ fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) 0.0)
->       g = force $ fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) 0.0)
->       rhs = force $ fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) 0.0)
+>       u = fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) ui)
+>       v = fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) vi)
+>       f = fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) 0.0)
+>       g = fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) 0.0)
+>       rhs = fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) 0.0)
 >       p = fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) 0.0)
 >       (flag, ibound) = init_flag imax jmax delx dely
 >       ifluid = (imax * jmax) - ibound
