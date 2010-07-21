@@ -8,17 +8,16 @@
 > import Navier.Datadefs
 > import Navier.Params
 
-
 > init_flag :: Int -> Int -> Double -> Double -> (Array DIM2 Int, Int)
 > init_flag imax jmax delx dely =
 >     let
 >         dims = Z :. (jmax+2) :. (imax+2)
->         flag = force $ fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) (0::Int))
+>         flag@Manifest{} = force $ fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) (0::Int))
 >         -- Make a circular obstacle
 >         mx = 20.0/41.0*(intCast jmax)*dely
 >         my = mx
 >         rad1 = 5.0/41.0*(intCast jmax)*dely
->         flag' = force $ traverse flag id update
+>         flag'@Manifest{} = force $ traverse flag id update
 >             where
 >               update get c@(sh :. j :. i) =
 >                   if (inBounds i j) then
@@ -29,13 +28,13 @@
 >                   else
 >                       get c
 >         -- Make the north, sourth, east, and west boundary cells
->         flagi' = force $ traverse flag' id update
+>         flagi'@Manifest{} = force $ traverse flag' id update
 >             where
 >               update get c@(sh :. j :. i) = 
 >                   if (j==0) then _cb
 >                   else if (j==(jmax+1)) then _cb
 >                        else get c
->         flag'' = force $ traverse flagi' id update
+>         flag''@Manifest{} = force $ traverse flagi' id update
 >             where 
 >               update get c@(sh :. j :. i) = 
 >                   if (j>=1 && j<=jmax) then
@@ -45,7 +44,7 @@
 >                   else
 >                       get c
 >         -- Flag boundaries near obstacles
->         flag''' = force $ traverse flag'' id update
+>         flag'''@Manifest{} = force $ traverse flag'' id update
 >              where
 >                update get c@(sh :. j :. i) = 
 >                    if (inBounds i j && (get c .&. _cf) == 0) then 

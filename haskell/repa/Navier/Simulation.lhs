@@ -1,3 +1,6 @@
+ {-# LANGUAGE QuasiQuotes #-}
+ {-# LANGUAGE TypeOperators #-}
+
 > module Navier.Simulation where
 
 > import Navier.Datadefs
@@ -11,7 +14,7 @@
 
 > import Data.Array.Parallel.Base ((:*:)(..))
 
-> set_timestamp_interval del_t u v = 
+> set_timestamp_interval del_t (u@Manifest{}) (v@Manifest{}) = 
 >     -- del_t satisfying CFL conditions
 >     -- else no time stepsize control
 >     if (tau >= 1.0e-10) then
@@ -31,8 +34,10 @@
 >     else
 >         del_t
 
-> compute_tentative_velocity uA vA fA gA flagA del_t =
->    let f' = force $ traverse (Data.Array.Repa.zipWith (:*:) flagA
+> compute_tentative_velocity  (uA@Manifest{}) (vA@Manifest{})
+>                             (fA@Manifest{}) (gA@Manifest{})
+>                             (flagA@Manifest{}) del_t =
+>    let f'@Manifest{} = force $ traverse (Data.Array.Repa.zipWith (:*:) flagA
 >             (Data.Array.Repa.zipWith (:*:) uA 
 >              (Data.Array.Repa.zipWith (:*:) vA fA))) id updatef
 >        flag = fsta
@@ -85,7 +90,7 @@
 >                 u $ get (sh :. j :. i)
 >          else
 >              comp $ get (sh :. j :. i)
->        g' = force $ traverse (Data.Array.Repa.zipWith (:*:) flagA
+>        g'@Manifest{} = force $ traverse (Data.Array.Repa.zipWith (:*:) flagA
 >                       (Data.Array.Repa.zipWith (:*:) uA 
 >                        (Data.Array.Repa.zipWith (:*:) vA gA))) id updateg
 >        updateg get c@(sh :. j :. i) =
@@ -122,7 +127,8 @@
 >                  v $ get c
 >             else
 >               comp $ get c
->        f'' = force $ traverse (Data.Array.Repa.zipWith (:*:) uA f') id update
+
+>        f''@Manifest{} = force $ traverse (Data.Array.Repa.zipWith (:*:) uA f') id update
 >              where
 >                update get c@(sh :. j :. i) =
 >                    if (j>=1 && j<=jmax) then
@@ -131,7 +137,7 @@
 >                       else snda $ get (sh :. j :. i)
 >                    else
 >                        snda $ get (sh :. j :. i)
->        g'' = force $ traverse (Data.Array.Repa.zipWith (:*:) vA g') id update
+>        g''@Manifest{} = force $ traverse (Data.Array.Repa.zipWith (:*:) vA g') id update
 >              where
 >                update get c@(sh :. j :. i) =
 >                    if (i>=1 && i<=imax) then
@@ -144,7 +150,8 @@
 >       (f'', g'')
 >        
 
-> compute_rhs f g rhs flag del_t = 
+> compute_rhs (f@Manifest{}) (g@Manifest{}) (rhs@Manifest{}) 
+>              (flag@Manifest{}) del_t = 
 >     force $ traverse (Data.Array.Repa.zipWith (:*:) flag
 >               (Data.Array.Repa.zipWith (:*:) rhs
 >                (Data.Array.Repa.zipWith (:*:) f g))) id update
@@ -155,15 +162,16 @@
 >              ((g $ get (sh :. j :. i))-(g $ get (sh :. (j-1) :. i)))/dely)/del_t
 >           else
 >               rhs $ get (sh :. j :. i)
->           where
->             flag = fsta
->             rhs = fsta . snda
->             f = fsta . snda . snda
->             g = snda . snda . snda
+>             where
+>               flag = fsta
+>               rhs = fsta . snda
+>               f = fsta . snda . snda
+>               g = snda . snda . snda
+
 
 > poisson :: Array DIM2 Double -> Array DIM2 Double -> Array DIM2 Int -> Int ->
 >            Double -> (Array DIM2 Double, Double, Int)
-> poisson p rhs flag ifluid res = 
+> poisson (p@Manifest{}) (rhs@Manifest{}) (flag@Manifest{}) ifluid res = 
 >     let
 >         rdx2 = 1.0/(delx*delx)
 >         rdy2 = 1.0/(dely*dely)
@@ -183,7 +191,7 @@
 >         p0' = if (p0 < 0.0001) then 1.0 else p0
 
 >         -- Partial computation of residual
->         computeRes p p0 =
+>         computeRes (p@Manifest{}) p0 =
 >           let
 >             res = sumAll $ force $ traverse (Data.Array.Repa.zipWith (:*:) flag 
 >                                      (Data.Array.Repa.zipWith (:*:) p rhs)) id update
@@ -207,10 +215,11 @@
 >                         0.0
 >           in
 >             (sqrt (res/((fromIntegral ifluid)::Double)))/p0
->                                   
+
 >         -- Red/Black SOR-iteration (compute new p)
->         iterop rb p rhs flag = force $ traverse (Data.Array.Repa.zipWith (:*:) flag
->                                           (Data.Array.Repa.zipWith (:*:) p rhs))
+>         iterop rb (p@Manifest{}) (rhs@Manifest{}) (flag@Manifest{}) =
+>                     force $ traverse (Data.Array.Repa.zipWith (:*:) flag
+>                             (Data.Array.Repa.zipWith (:*:) p rhs))
 >                             id (update rb)
 >         update rb get c@(sh :. j :. i) =
 >             let
@@ -249,7 +258,7 @@
 >                   p $ get c
 >
 >         -- Iterations
->         sorIterate iter p res = 
+>         sorIterate iter (p@Manifest{}) res = 
 >             let
 >                 -- red
 >                 p' = iterop 0 p rhs flag
@@ -270,9 +279,11 @@
 >       sorIterate 0 p res
 
 
-> update_velocity u v f g p flag del_t =
+> update_velocity (u@Manifest{}) (v@Manifest{})
+>                 (f@Manifest{}) (g@Manifest{})
+>                 (p@Manifest{}) (flag@Manifest{}) del_t =
 >     let
->         u' = force $ traverse (Data.Array.Repa.zipWith (:*:) flag
+>         u'@Manifest{} = force $ traverse (Data.Array.Repa.zipWith (:*:) flag
 >                               (Data.Array.Repa.zipWith (:*:) p 
 >                               (Data.Array.Repa.zipWith (:*:) f u))) id update
 >              where
@@ -290,7 +301,7 @@
 >                                      -(p $ get (sh :. j :. i)))*del_t/delx
 >                      else
 >                          u $ get c
->         v' = force $ traverse (Data.Array.Repa.zipWith (:*:) flag
+>         v'@Manifest{} = force $ traverse (Data.Array.Repa.zipWith (:*:) flag
 >                               (Data.Array.Repa.zipWith (:*:) p 
 >                               (Data.Array.Repa.zipWith (:*:) g v))) id update
 >              where

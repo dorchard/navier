@@ -15,7 +15,7 @@
 > calc_zeta :: Array DIM2 Double -> Array DIM2 Double -> 
 >                  Array DIM2 Int -> Int -> Int -> Double -> Double
 >                  -> Array DIM2 Double
-> calc_zeta uA vA flagA imax jmax delx dely = 
+> calc_zeta (uA@Manifest{}) (vA@Manifest{}) (flagA@Manifest{}) imax jmax delx dely = 
 >       force $ traverse (Data.Array.Repa.zipWith (:*:) flagA
 >          (Data.Array.Repa.zipWith (:*:) uA vA)) id calcZeta
 >            where
@@ -38,7 +38,8 @@
 > write_ppm :: Array DIM2 Double -> Array DIM2 Double -> Array DIM2 Double
 >              -> Array DIM2 Int -> Int -> Int -> Double -> Double -> String
 >              -> Int -> Int -> IO ()
-> write_ppm u v p flag imax jmax delx dely outname iters freq =
+> write_ppm (u@Manifest{}) (v@Manifest{}) (p@Manifest{}) (flag@Manifest{})
+>              imax jmax delx dely outname iters freq =
 >     do createDirectoryIfMissing True outname
 >        let filename = printf "%s/%06d.ppm" outname (iters `div` freq)
 >        file <- openBinaryFile filename WriteMode

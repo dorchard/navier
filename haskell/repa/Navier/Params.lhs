@@ -15,7 +15,7 @@ Boundary flags
 > delx = xlength/660.0
 > dely = ylength/120.0
 
-> t_end = 40.0         -- Simultion runtime
+> t_end = 0.06 --40.0         -- Simultion runtime
 > del_t = 0.003        -- (default) duration of each timestep
 > tau = 0.5            -- safety factor for timestep control
 
@@ -40,6 +40,11 @@ Boundary flags
 > ignoreBoundary arr = let Z :. height :. width = extent arr
 >                      in backpermute (Z :. (height-2) :. (width-2)) 
 >                            (\(sh :. y :. x) -> (sh :. (y+1) :. (x+1))) arr
+
+ {-# INLINE obstacle #-}
+
+> {-# INLINE obs #-}
+> obs x = if (x .&. _cf /= 0) then 1 else 0
 
 > {-# INLINE obstacle #-}
 > obstacle acc get i = if ((acc $ get i) .&. _cf /= 0) then 1 else 0

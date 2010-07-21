@@ -46,18 +46,18 @@
 >             -> Array DIM2 Double -> Array DIM2 Double -> Array DIM2 Double -> Array DIM2 Double
 >             -> Array DIM2 Int -> Int -> Int -> Int
 >             -> [(Array DIM2 Double, Array DIM2 Double, Array DIM2 Double, Int)]
-> mainLoop t iters del_t res u v p f g rhs flag ifluid ibound output_freq
+> mainLoop t iters del_t res u@Manifest{} v@Manifest{} p@Manifest{} f@Manifest{} g@Manifest{} rhs@Manifest{} flag@Manifest{} ifluid ibound output_freq
 >            | t < t_end = 
 >              let
 >                del_t' = set_timestamp_interval del_t u v
->                (f', g') = compute_tentative_velocity u v f g flag del_t'
->                rhs' = compute_rhs f' g' rhs flag del_t'
+>                (f'@Manifest{}, g'@Manifest{}) = compute_tentative_velocity u v f g flag del_t'
+>                rhs'@Manifest{} = compute_rhs f' g' rhs flag del_t'
 
 >                -- the heavy computational work mostly happens in poisson
->                (p', res', itersor) = poisson p rhs' flag ifluid res
+>                (p'@Manifest{}, res', itersor) = poisson p rhs' flag ifluid res
 
->                (u', v') = update_velocity u v f' g' p' flag del_t'
->                (u'', v'') = apply_boundary_conditions u' v' flag imax jmax ui vi
+>                (u'@Manifest{}, v'@Manifest{}) = update_velocity u v f' g' p' flag del_t'
+>                (u''@Manifest{}, v''@Manifest{}) = apply_boundary_conditions u' v' flag imax jmax ui vi
 
 >                -- output message
 >                msg = printf "%d t:%.8f del_t:%.8f, SOR iters:%3d, res:%.8f, bcells:%d"
