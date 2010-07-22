@@ -45,6 +45,7 @@
 >        v = fsta . snda . snda
 >        comp = snda . snda. snda
 >        updatef get c@(sh :. j :. i) =
+
 >             if ((inBounds i j) && (i<=(imax-1))) then
 >              if (((flag $ get c) .&. _cf /= 0)
 >                 && ((flag $ get (sh :. j :. (i+1))) .&. _cf /= 0)) then
@@ -193,8 +194,9 @@
 >         -- Partial computation of residual
 >         computeRes (p@Manifest{}) p0 =
 >           let
->             res = sumAll $ force $ traverse (Data.Array.Repa.zipWith (:*:) flag 
+>             res'@Manifest{} = force $ traverse (Data.Array.Repa.zipWith (:*:) flag 
 >                                      (Data.Array.Repa.zipWith (:*:) p rhs)) id update
+>             res = sumAll $ res'
 >             update get c@(sh :. j :. i) =
 >                 let
 >                    flag = fsta
@@ -240,6 +242,7 @@
 >                 else
 >                  -- modified star near boundary
 >                  if ((flag $ get c) .&. _cf /= 0) then 
+>
 >                    let
 >                       beta_mod = -omega/((obstacle flag get (sh :. j :. (i+1))+
 >                                          (obstacle flag get (sh :. j :. (i-1))))*rdx2
@@ -256,14 +259,36 @@
 >                    p $ get c
 >                 else
 >                   p $ get c
->
+
+                   let
+                     _l = get (sh :. j :. (i-1)) 
+                     _r = get (sh :. j :. (i+1))
+                     _t = get (sh :. (j-1) :. i)
+                     _b = get (sh :. (j+1) :. i)
+                     beta_mod = -omega/(((obs $ flag _r)+
+                                           (obs $ flag _l))*rdx2
+                                         +((obs $ flag _b)+
+                                           (obs $ flag _t))*rdy2)
+                    in
+                      (1.0-omega)*(p $ get c) - (beta_mod*(
+                     (
+                      (((obs $ flag _r)*p _r)
+                      +((obs $ flag _l)*p _l))*rdx2
+                     +(((obs $ flag _b)*p _b)
+                      +((obs $ flag _t)*p _t))*rdy2
+                     -(rhs $ get c))))                                        
+                  else
+                    p $ get c
+                 else
+                   p $ get c
+
 >         -- Iterations
 >         sorIterate iter (p@Manifest{}) res = 
 >             let
 >                 -- red
->                 p' = iterop 0 p rhs flag
+>                 (p'@Manifest{}) = iterop 0 p rhs flag
 >                 -- black
->                 p'' = iterop 1 p' rhs flag
+>                 (p''@Manifest{}) = iterop 1 p' rhs flag
 >                 -- res
 >                 res' = computeRes p'' p0'
 >             in
