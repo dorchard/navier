@@ -15,11 +15,11 @@ Boundary flags
 > delx = xlength/660.0
 > dely = ylength/120.0
 
-> t_end = 0.06 --40.0         -- Simultion runtime
+> t_end = 40.0         -- Simultion runtime
 > del_t = 0.003        -- (default) duration of each timestep
 > tau = 0.5            -- safety factor for timestep control
 
-> itermax = 100::Int   -- max number of SOR iterations
+> itermax = 10::Int   -- max number of SOR iterations
 > eps = 0.001          -- stopping error threshold for SOR
 > omega = 1.7          -- relaxation parameter for SOR
 > gamma = 0.9          -- upwind differencing factor in PDE discretisation

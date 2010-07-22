@@ -228,37 +228,40 @@
 >               flag = fsta
 >               p = fsta . snda
 >               rhs = snda . snda
+>               -- CSE the central element access
+>               !_c = get $ c
 >             in
 >               if ((inBounds i j) && (((i+j) `mod` 2) == rb)) then
->                 if ((flag $ get c) == (_cf .|. _bnsew)) then
+>                 if ((flag _c) == (_cf .|. _bnsew)) then
 >                     -- five point star for interior fluid cells
->                    (1.0-omega)*(p $ get c) - 
+>                    (1.0-omega)*(p _c) - 
 >                             (beta_2 * 
 >                               (((p $ get (sh :. j :. (i+1)))
 >                                +(p $ get (sh :. j :. (i-1))))*rdx2
 >                              + ((p $ get (sh :. (j+1) :. i))
 >                                +(p $ get (sh :. (j-1) :. i)))*rdy2
->                              - (rhs $ get (sh :. j :. i))))
+>                              - (rhs _c)))
 >                 else
 >                  -- modified star near boundary
->                  if ((flag $ get c) .&. _cf /= 0) then 
->
+>                  if ((flag _c) .&. _cf /= 0) then 
 >                    let
 >                       beta_mod = -omega/((obstacle flag get (sh :. j :. (i+1))+
 >                                          (obstacle flag get (sh :. j :. (i-1))))*rdx2
 >                                        +((obstacle flag get (sh :. (j+1) :. i))+
 >                                          (obstacle flag get (sh :. (j-1) :. i)))*rdy2)
 >                    in
->                      (1.0-omega)*(p $ get c) - (beta_mod*(
+>                      (1.0-omega)*(p _c) - (beta_mod*(
 >                     (((obstacle flag get (sh :. j :. (i+1))*(p $ get (sh :. j :. (i+1)))))
 >                     +((obstacle flag get (sh :. j :. (i-1))*(p $ get (sh :. j :. (i-1))))))*rdx2
 >                    +(((obstacle flag get (sh :. (j+1) :. i)*(p $ get (sh :. (j+1) :. i))))
 >                     +((obstacle flag get (sh :. (j-1) :. i)*(p $ get (sh :. (j-1) :. i)))))*rdy2
->                    - (rhs $ get (sh :. j :. i))))                    
+>                    - (rhs _c)))                    
 >                  else
->                    p $ get c
+>                    p _c
 >                 else
->                   p $ get c
+>                   p _c
+
+>                 ----- CSE version (actually slower) 
 
                    let
                      _l = get (sh :. j :. (i-1)) 
