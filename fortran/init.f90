@@ -4,12 +4,11 @@ module init
       
   contains
 
-    subroutine initFlag(imax,jmax,delx,dely,flag,ibound)
-      integer, intent(in) ::  imax, jmax
+    subroutine initFlag(delx, dely, flag, ibound)
       real, intent(in) :: delx, dely
       integer flag(0:imax+1, 0:jmax+1) 
 
-      real :: mx, my, x, y, rad1
+      real :: mx, my, x, y, rad1, x1, y1
       integer :: ibound;
       
       integer :: i, j
@@ -19,16 +18,29 @@ module init
       my = mx
       rad1 = 5.0/41.0*jmax*dely
 
+      flag = C_F
+
       ! insert circular mask
-      do i = 1, imax, 1
-         do j = 1, jmax, 1
-            x = (j-0.5)*delx - mx
+      do i = 1, imax
+         do j = 1, jmax
+            x = (i-0.5)*delx - mx
             y = (j-0.5)*dely - my
             if (x*x + y*y <= rad1*rad1) then 
                flag(i,j) = C_B 
-            else 
-               flag(i,j) = C_F
             end if
+            
+            x1 = (i-0.5)*delx - mx*4
+            y1 = (j-0.5)*dely - my*1.25
+            if (x1*x1 + y1*y1 <= rad1*rad1) then 
+               flag(i,j) = C_B 
+            end if
+
+            x1 = (i-0.5)*delx - mx*3
+            y1 = (j-0.5)*dely - my*0.5
+            if (x1*x1 + y1*y1 <= rad1*rad1) then 
+               flag(i,j) = C_B 
+            end if
+
          end do
       end do
       
@@ -40,8 +52,8 @@ module init
       flag(imax+1,1:jmax) = C_B
       
       
-      do i = 1, imax, 1
-         do j = 1, jmax, 1
+      do i = 1, imax
+         do j = 1, jmax
             if (.not. (toLogical (iand(flag(i,j),C_F)))) then
                ibound = ibound + 1
                if (toLogical (iand(flag(i-1,j), C_F))) flag(i,j) = ior(flag(i,j), B_W)
@@ -52,7 +64,7 @@ module init
          end do
       end do
       
-    end subroutine initFlag
+    end subroutine
     
-  end module init
+  end module
   
