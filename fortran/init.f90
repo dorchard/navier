@@ -29,17 +29,18 @@ module init
                flag(i,j) = C_B 
             end if
             
-            x1 = (i-0.5)*delx - mx*4
-            y1 = (j-0.5)*dely - my*1.25
-            if (x1*x1 + y1*y1 <= rad1*rad1) then 
-               flag(i,j) = C_B 
-            end if
-
-            x1 = (i-0.5)*delx - mx*3
-            y1 = (j-0.5)*dely - my*0.5
-            if (x1*x1 + y1*y1 <= rad1*rad1) then 
-               flag(i,j) = C_B 
-            end if
+            ! Some code for adding a few more circular masks near-by
+            !x1 = (i-0.5)*delx - mx*4
+            !y1 = (j-0.5)*dely - my*1.25
+            !if (x1*x1 + y1*y1 <= rad1*rad1) then 
+            !   flag(i,j) = C_B 
+            !end if
+            !
+            !x1 = (i-0.5)*delx - mx*3
+            !y1 = (j-0.5)*dely - my*0.5
+            !if (x1*x1 + y1*y1 <= rad1*rad1) then 
+            !   flag(i,j) = C_B 
+            !end if
 
          end do
       end do

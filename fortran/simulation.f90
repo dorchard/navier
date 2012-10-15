@@ -15,7 +15,7 @@ module simulation
       do i = 1, (imax-1)
         do j = 1, jmax
             ! only if both adjacent cells are fluid cells */
-            if (toLogical(iand(flag(i,j), C_F)) .and. toLogical(iand(flag(i,j), C_F))) then
+            if (toLogical(iand(flag(i,j), C_F)) .and. toLogical(iand(flag(i+1,j), C_F))) then
                
                 du2dx = ((u(i,j)+u(i+1,j))*(u(i,j)+u(i+1,j))+ & 
 			   gamma*abs(u(i,j)+u(i+1,j))*(u(i,j)-u(i+1,j))- &
@@ -40,7 +40,7 @@ module simulation
     do i = 1, imax
        do j = 1, (jmax-1)
           ! only if both adjacent cells are fluid cells
-          if (toLogical(iand(flag(i,j), C_F)) .and. toLogical(iand(flag(i,j), C_F))) then
+          if (toLogical(iand(flag(i,j), C_F)) .and. toLogical(iand(flag(i,j+1), C_F))) then
              
              duvdx = ((u(i,j)+u(i,j+1))*(v(i,j)+v(i+1,j))+  &
                       gamma*abs(u(i,j)+u(i,j+1))*(v(i,j)-v(i+1,j))- &

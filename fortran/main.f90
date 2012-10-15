@@ -15,10 +15,6 @@ program navier
 
    implicit none
 
-   type::data_t
-      integer::d
-   end type
-
    character(10) :: outname = "output"
 
    real :: t = 0, res = 0, del_t = 0.003, t_count = 0.0
@@ -29,11 +25,6 @@ program navier
    real rhs(0:imax+1, 0:jmax+1), f(0:imax+1, 0:jmax+1), g(0:imax+1, 0:jmax+1)
    integer flag(0:imax+1, 0:jmax+1)
 
-   !do i = 0, imax+1, 1
-   !   do j = 0, jmax+1, 1
-   !      u
-   !   end do
-   !end do
    u = ui
    v = vi
    p = 0.0
@@ -68,15 +59,18 @@ program navier
          
       call apply_boundary_conditions(u, v, flag, t)
 
-      if (toLogical(outputFlag) .and. (t >= t_count)) then
-          call write_ppm(u, v, p, flag, output_counter, outname)
-          output_counter = output_counter + 1
-          t_count = t_count + output_freqt
-      end if
-      
-      !if (toLogical(outputFlag) .and. (mod(iters, output_freq) == 0)) then
-      !   call write_ppm(u, v, p, flag, iters, outname)
+      ! An alternate way to print output using the simulation time
+      !if (toLogical(outputFlag) .and. (t >= t_count)) then
+      !    call write_ppm(u, v, p, flag, output_counter, outname)
+      !    output_counter = output_counter + 1
+      !    t_count = t_count + output_freqt
       !end if
+      
+      if (toLogical(outputFlag) .and. (mod(iters, output_freq) == 0)) then
+         call write_ppm(u, v, p, flag, iters, outname)
+         output_counter = output_counter + 1
+         t_count = t_count + output_freqt
+      end if
 
       t = t + del_t
       iters = iters + 1

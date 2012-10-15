@@ -131,15 +131,26 @@ module boundary
     u(0, 1:jmax) = ui
     v(0, 1:jmax) = 2*vi-v(1,1:jmax)
 
-    ! silly tricks to drop pieces of high flow in at certain points during the sim - fun for
-    if (mod(t, 4.0) < 0.4 .and. t > 0.5) then
-       do i = -1, 1, 1
-          do j = -1, 1, 1
-             u(mod(floor(t*10.0+i),imax),mod(floor(t*5+j),jmax)) = 1
-             v(mod(floor(t*10.0+i),imax),mod(floor(t*5+j),jmax)) = 1
-          end do
-       end do
-    end if
+    ! code for a conflicting flow coming in from the opposite side
+    !if (t < 45) then
+    !  u(imax, 1:jmax) = -ui
+    !  u(imax-1, 1:jmax) = -ui
+    !  u(imax+1, 1:jmax) = -ui
+    !else
+    !  u(imax,0:jmax+1) = u(imax-1,0:jmax+1)
+    !end if
+
+
+    ! silly tricks to drop pieces of high flow in at certain points during the sim - for fun
+    !if (mod(t, 4.0) < 0.4 .and. t > 0.5) then
+    !   do i = -1, 1, 1
+    !      do j = -1, 1, 1
+    !         u(mod(floor(t*10.0+i),imax),mod(floor(t*5+j),jmax)) = 1
+    !         v(mod(floor(t*10.0+i),imax),mod(floor(t*5+j),jmax)) = 1
+    !      end do
+    !   end do
+    !end if
+
    end subroutine
    
    

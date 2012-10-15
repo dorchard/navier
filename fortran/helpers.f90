@@ -15,7 +15,7 @@ module helpers
   real, parameter :: Re = 150.0, ui = 1.0, vi = 0.0
 
   integer, parameter :: imax = 660, jmax = 120, outputFlag = 1, output_freq = 10, itermax = 10
-  real, parameter :: output_freqt = 0.04
+  real, parameter :: output_freqt = 0.05
   real, parameter :: xlength = 22.0, ylength = 4.1
   real, parameter :: delx = xlength/imax, dely = ylength/jmax
 

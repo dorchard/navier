@@ -1,0 +1,14 @@
+#!/bin/bash
+cd $1
+for f in *.ppm
+do
+   if [ ! -e "`basename $f ppm`jpg" ]
+   then
+     echo Converting $f
+     convert -quality 100 $f `basename $f ppm`jpg
+   fi
+done 
+ffmpeg -f image2 -i %06d.jpg -b 800k $1.mpeg
+mv $1.mpeg ../.
+cd ../.
+

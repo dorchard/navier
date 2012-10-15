@@ -47,6 +47,17 @@ module output
                r = (abs(zval/12.6)**0.4) * 255
                g = r
                b = r
+               if (r > 255) then
+                  if (r < 510) then
+                     g = 255 - (r - 255)
+                     b = 255 - (r - 255)
+                     r = 255
+                  else
+                     b = 255 - (r - 510)
+                     g = 255
+                     r = 255
+                  end if
+               end if
             end if
             write(8,"(A1,A1,A1,$)") char(r), char(g), char(b)
          end do
