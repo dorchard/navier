@@ -1,9 +1,10 @@
-This project provides a sample computational science program written
-using a number of languages and approaches for the sake of language
-comparison.  The sample program is a slightly modified version of a
-Navier-Stoke fluid dynamics code by Griebel et al.[1].
+This project provides a sample program, that provides a significant
+numerical computation, written using a number of languages and
+approaches for the sake of comparison.  The sample program is a
+slightly modified version of a Navier-Stokes fluid dynamics code by
+Griebel et al. [1].
 
-Currenty implementations include C, Fortran, and Haskell. 
+Current implementations include C, Fortran, and Haskell (repa). 
 
 2012/13 - Accelerate (Haskell) and Ypnos (Haskell) implementations in progress.
 
