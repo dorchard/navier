@@ -218,7 +218,7 @@ module simulation
       ! del_t satisfying CFL conditions
       if (tau >= 1.0e-10) then
          umax = 1.0e-10
-         vmax = 1.0e-10; 
+         vmax = 1.0e-10 
          
          do i = 0, (imax+1), 1
             do j = 1, (jmax+1), 1
@@ -232,7 +232,7 @@ module simulation
          end do
          
          deltu = delx/umax
-         deltv = dely/vmax; 
+         deltv = dely/vmax 
          deltRe = 1/(1/(delx*delx)+1/(dely*dely))*Re/2.0
          
          if (deltu < deltv) then
