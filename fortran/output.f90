@@ -29,7 +29,7 @@ module output
       
       call calc_zeta(u, v, flag, zeta)
       
-      open(unit=8,file=outpath)   
+      open(unit=8,file=outpath,status='REPLACE')   
       write(8,'("P6 ", i3, " ", i3, " 255")'), imax, jmax ! "P6 %d %d 255\n", imax, jmax
      
       do j = 1, jmax
