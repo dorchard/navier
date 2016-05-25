@@ -20,8 +20,8 @@ module helpers
   real, parameter :: delx = xlength/imax, dely = ylength/jmax
 
   contains
-
-  pure logical function toLogical(x)
+  
+  logical function toLogical(x)
     integer, intent(in) :: x
     if (x .eq. 0) then 
        toLogical = .false.
@@ -30,7 +30,7 @@ module helpers
     end if
   end function
 
-  pure integer function fromLogical(x)
+  integer function fromLogical(x)
     logical, intent(in) :: x
     if (x) then
        fromLogical = 0
@@ -39,7 +39,7 @@ module helpers
     end if
   end function
 
-  pure integer function toMask(x)
+  integer function toMask(x)
     integer, intent(in) :: x
     if (x == 0) then 
        toMask = 0
