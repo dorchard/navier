@@ -29,8 +29,7 @@ module simulation
                          /(4.0*dely)
                 laplu = (u(i+1,j)-2.0*u(i,j)+u(i-1,j))/delx/delx+ &
                         (u(i,j+1)-2.0*u(i,j)+u(i,j-1))/dely/dely
-   
-                f(i,j) = u(i,j)+del_t*(laplu/Re-du2dx-duvdy)
+                f(i,j) = u(i,j) + del_t*(laplu/Re-du2dx-duvdy)
             else 
                 f(i,j) = u(i,j)
             end if
