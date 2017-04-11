@@ -1,0 +1,46 @@
+
+Infering stencil specs for 'navier'
+
+navier/fortran/boundary_mod.f90
+(40:15)-(40:34)    stencil readOnce, (forward(depth=1, dim=2, nonpointed))*(pointed(dim=1)) :: u
+(48:15)-(48:34)    stencil readOnce, (forward(depth=1, dim=2, nonpointed))*(pointed(dim=1)) :: u
+(50:15)-(50:34)    stencil readOnce, (backward(depth=1, dim=2, nonpointed))*(pointed(dim=1)) :: u
+(52:15)-(52:34)    stencil readOnce, (backward(depth=1, dim=2, nonpointed))*(pointed(dim=1)) :: u
+(63:15)-(63:32)    stencil readOnce, (forward(depth=1, dim=2, nonpointed))*(pointed(dim=1)) :: u
+(67:15)-(67:32)    stencil readOnce, (forward(depth=1, dim=2, nonpointed))*(pointed(dim=1)) :: u
+(73:15)-(73:32)    stencil readOnce, (backward(depth=1, dim=2, nonpointed))*(pointed(dim=1)) :: u
+(75:15)-(75:32)    stencil readOnce, (backward(depth=1, dim=2, nonpointed))*(pointed(dim=1)) :: u
+(88:15)-(88:32)    stencil readOnce, (forward(depth=1, dim=1, nonpointed))*(pointed(dim=2)) :: v
+(92:15)-(92:32)    stencil readOnce, (forward(depth=1, dim=1, nonpointed))*(pointed(dim=2)) :: v
+(96:15)-(96:32)    stencil readOnce, (backward(depth=1, dim=1, nonpointed))*(pointed(dim=2)) :: v
+(98:15)-(98:32)    stencil readOnce, (backward(depth=1, dim=1, nonpointed))*(pointed(dim=2)) :: v
+(109:15)-(109:32)    stencil readOnce, (forward(depth=1, dim=1, nonpointed))*(pointed(dim=2)) :: v
+(113:15)-(113:32)    stencil readOnce, (forward(depth=1, dim=1, nonpointed))*(pointed(dim=2)) :: v
+(119:15)-(119:32)    stencil readOnce, (backward(depth=1, dim=1, nonpointed))*(pointed(dim=2)) :: v
+(121:15)-(121:32)    stencil readOnce, (backward(depth=1, dim=1, nonpointed))*(pointed(dim=2)) :: v
+navier/fortran/init_mod.f90
+(59:11)-(59:81)    stencil readOnce, (pointed(dim=1))*(pointed(dim=2)) :: flag
+(60:11)-(60:81)    stencil readOnce, (pointed(dim=1))*(pointed(dim=2)) :: flag
+(61:11)-(61:81)    stencil readOnce, (pointed(dim=1))*(pointed(dim=2)) :: flag
+(62:11)-(62:81)    stencil readOnce, (pointed(dim=1))*(pointed(dim=2)) :: flag
+navier/fortran/output_mod.f90
+(85:11)-(85:69)    stencil readOnce, (forward(depth=1, dim=2))*(pointed(dim=1)) :: u
+(85:11)-(85:69)    stencil readOnce, (forward(depth=1, dim=1))*(pointed(dim=2)) :: v
+navier/fortran/simulation_mod.f90
+(35:11)-(35:56)    stencil (pointed(dim=1))*(centered(depth=1, dim=2)) + (pointed(dim=2))*(centered(depth=1, dim=1)) :: u
+(35:11)-(35:56)    stencil (forward(depth=1, dim=1))*(backward(depth=1, dim=2)) :: v
+(37:11)-(37:25)    stencil readOnce, (pointed(dim=1))*(pointed(dim=2)) :: u
+(62:11)-(62:54)    stencil (forward(depth=1, dim=2))*(backward(depth=1, dim=1)) :: u
+(62:11)-(62:54)    stencil (pointed(dim=1))*(centered(depth=1, dim=2)) + (pointed(dim=2))*(centered(depth=1, dim=1)) :: v
+(64:11)-(64:25)    stencil readOnce, (pointed(dim=1))*(pointed(dim=2)) :: v
+(88:11)-(88:78)    stencil readOnce, (backward(depth=1, dim=1))*(pointed(dim=2)) :: f
+(88:11)-(88:78)    stencil readOnce, (backward(depth=1, dim=2))*(pointed(dim=1)) :: g
+(136:17)-(139:44)    stencil readOnce, (pointed(dim=1))*(centered(depth=1, dim=2)) + (pointed(dim=2))*(centered(depth=1, dim=1)) :: p
+(136:17)-(139:44)    stencil readOnce, (pointed(dim=1))*(pointed(dim=2)) :: rhs
+(143:17)-(146:46)    stencil readOnce, (pointed(dim=1))*(centered(depth=1, dim=2, nonpointed)) + (pointed(dim=2))*(centered(depth=1, dim=1, nonpointed)) :: flag
+(143:17)-(146:46)    stencil readOnce, (pointed(dim=1))*(centered(depth=1, dim=2)) + (pointed(dim=2))*(centered(depth=1, dim=1)) :: p
+(143:17)-(146:46)    stencil readOnce, (pointed(dim=1))*(pointed(dim=2)) :: rhs
+(197:11)-(197:54)    stencil readOnce, (pointed(dim=1))*(pointed(dim=2)) :: f
+(197:11)-(197:54)    stencil readOnce, (forward(depth=1, dim=1))*(pointed(dim=2)) :: p
+(206:11)-(206:54)    stencil readOnce, (pointed(dim=1))*(pointed(dim=2)) :: g
+(206:11)-(206:54)    stencil readOnce, (forward(depth=1, dim=2))*(pointed(dim=1)) :: p
