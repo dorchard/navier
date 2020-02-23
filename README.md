@@ -1,4 +1,4 @@
-#ABOUT
+# ABOUT
 
 This project provides a sample program, that provides a significant
 numerical computation, written using a number of languages and
@@ -13,15 +13,18 @@ Current implementations include C, Fortran, and Haskell (repa).
 
 # Building and Running
 ## C
+
 ```
 cd c/nast2d-dom/
 make
 ./navier
 ^C
 ```
+
 ^C when you're done running.
 
 ## FORTRAN
+```
 cd fortran
 make
 ./navier
