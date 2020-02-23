@@ -1,9 +1,17 @@
-GFLAGS = -O2
+FC:=gfortran
+GFLAGS:=-O2
+OUTPUT:=navier
+SOURCES:=helpers_mod.f90 init_mod.f90 boundary_mod.f90 simulation_mod.f90 output_mod.f90 navier.f90
+OBJS:=$(patsubst %.f90, %.o, $(SOURCES))
 
-all: 	
-	gfortran $(GFLAGS) -c helpers.f90
-	gfortran $(GFLAGS) -c init.f90
-	gfortran $(GFLAGS) -c boundary.f90
-	gfortran $(GFLAGS) -c simulation.f90
-	gfortran $(GFLAGS) -c output.f90
-	gfortran $(GFLAGS) -o navier main.f90 helpers.f90 init.f90 boundary.f90 simulation.f90 output.f90
+.PHONY: all
+all: $(MODS) $(OBJS) 
+	$(FC) -o $(OUTPUT) $(OBJS)
+
+%.o: %.f90
+	$(FC) $(GFLAGS) -c $< 
+
+.PHONY: clean
+clean:
+	rm *.o *.mod $(OUTPUT) 
+
