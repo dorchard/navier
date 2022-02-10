@@ -1,0 +1,5 @@
+resolver: lts-18.18
+packages: [.]
+
+extra-deps:
+- repa-3.4.1.5@sha256:4d94845e66d668345130f75f5de8f7c69139b91495c8c4b5a825014e8985e2fd,3562
