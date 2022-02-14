@@ -6,6 +6,7 @@ import Prelude hiding ( traverse )
 
 import Data.Bits
 import Data.Array.Repa
+import Data.Array.Repa.Eval ( suspendedComputeP )
 
 import Navier.Datadefs
 import Navier.Params
@@ -14,12 +15,12 @@ init_flag :: Int -> Int -> Double -> Double -> (Array U DIM2 Int, Int)
 init_flag imax jmax delx dely =
     let
         dims = Z :. (jmax+2) :. (imax+2)
-        flag = suspendedComputeP $ fromList dims (Prelude.replicate ((imax+2)*(jmax+2)) (0::Int))
+        flag = fromListUnboxed dims (Prelude.replicate ((imax+2)*(jmax+2)) (0::Int))
         -- Make a circular obstacle
         mx = 20.0/41.0*(intCast jmax)*dely
         my = mx
         rad1 = 5.0/41.0*(intCast jmax)*dely
-        flag' = suspendedComputeP $ traverse flag id update
+        flag' = traverse flag id update
             where
               update get c@(sh :. j :. i) =
                   if (inBounds i j) then
@@ -30,13 +31,13 @@ init_flag imax jmax delx dely =
                   else
                       get c
         -- Make the north, sourth, east, and west boundary cells
-        flagi' = suspendedComputeP $ traverse flag' id update
+        flagi' = traverse flag' id update
             where
               update get c@(sh :. j :. i) =
                   if (j==0) then _cb
                   else if (j==(jmax+1)) then _cb
                        else get c
-        flag'' = suspendedComputeP $ traverse flagi' id update
+        flag'' = traverse flagi' id update
             where
               update get c@(sh :. j :. i) =
                   if (j>=1 && j<=jmax) then
@@ -69,3 +70,6 @@ init_flag imax jmax delx dely =
                                      then 1+y else y
                          total y x = y + x
    in (flag''', ibound)
+  where
+    toScalar :: Array U DIM0 Int -> Int
+    toScalar arr = index arr Z

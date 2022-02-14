@@ -11,6 +11,7 @@ import System.IO
 import Text.Printf
 
 import Navier.Datadefs
+import Common
 import Navier.Params
 
 type ArrayU a = Array U DIM2 a

@@ -12,16 +12,6 @@ import Data.Array.Repa
 
 import Debug.Trace
 
--- TODO likely a strict pair so.
-data a :*: b = !a :*: !b
-infixr 9 :*:
-
-fsta :: a :*: b -> a
-fsta (a :*: _) = a
-
-snda :: a :*: b -> b
-snda (_ :*: b) = b
-
 _cb = 0x0000
 _bn = 0x0001
 _bs = 0x0002
