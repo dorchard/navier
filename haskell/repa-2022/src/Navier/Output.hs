@@ -21,12 +21,12 @@ calc_zeta
     -> Int -> Int -> Double -> Double
     -> ArrayU Double
 calc_zeta uA vA flagA imax jmax delx dely =
-      computeS $ traverse (Data.Array.Repa.zipWith (:*:) flagA
-         (Data.Array.Repa.zipWith (:*:) uA vA)) id calcZeta
+      computeS $ traverse (Data.Array.Repa.zipWith (,) flagA
+         (Data.Array.Repa.zipWith (,) uA vA)) id calcZeta
            where
-             flag = fsta
-             u = fsta . snda
-             v = snda . snda
+             flag = fst
+             u = fst . snd
+             v = snd . snd
              calcZeta get c@(sh :. j :. i) = 
                    if (inBounds i j && (i<=(imax-1)) && (j<=(jmax-1))) then
                        if (((flag $ get c) .&. _cf /= 0) &&

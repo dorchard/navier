@@ -8,6 +8,7 @@ import Prelude hiding ( traverse )
 import Navier.Datadefs
 import Common
 import Navier.Params
+import qualified Data.Array.Repa as Repa
 import Data.Array.Repa
 import Data.Array.Repa.Eval ( suspendedComputeP )
 
@@ -37,13 +38,13 @@ set_timestamp_interval del_t u v =
         del_t
 
 compute_tentative_velocity uA vA fA gA flagA del_t =
-   let f' = traverse (Data.Array.Repa.zipWith (:*:) flagA
-            (Data.Array.Repa.zipWith (:*:) uA
-             (Data.Array.Repa.zipWith (:*:) vA fA))) id updatef
-       flag = fsta
-       u = fsta . snda
-       v = fsta . snda . snda
-       comp = snda . snda. snda
+   let f' = traverse (Data.Array.Repa.zipWith (,) flagA
+            (Data.Array.Repa.zipWith (,) uA
+             (Data.Array.Repa.zipWith (,) vA fA))) id updatef
+       flag = fst
+       u = fst . snd
+       v = fst . snd . snd
+       comp = snd . snd. snd
        updatef get c@(sh :. j :. i) =
 
             if ((inBounds i j) && (i<=(imax-1))) then
@@ -91,9 +92,9 @@ compute_tentative_velocity uA vA fA gA flagA del_t =
                 u $ get (sh :. j :. i)
          else
              comp $ get (sh :. j :. i)
-       g' = traverse (Data.Array.Repa.zipWith (:*:) flagA
-                      (Data.Array.Repa.zipWith (:*:) uA 
-                       (Data.Array.Repa.zipWith (:*:) vA gA))) id updateg
+       g' = traverse (Data.Array.Repa.zipWith (,) flagA
+                      (Data.Array.Repa.zipWith (,) uA
+                       (Data.Array.Repa.zipWith (,) vA gA))) id updateg
        updateg get c@(sh :. j :. i) =
               if (inBounds i j) && (j<=(jmax-1)) then
                 if (((flag $ get c) .&. _cf /= 0)
@@ -129,31 +130,31 @@ compute_tentative_velocity uA vA fA gA flagA del_t =
             else
               comp $ get c
 
-       f'' = suspendedComputeP $ traverse (Data.Array.Repa.zipWith (:*:) uA f') id update
+       f'' = suspendedComputeP $ traverse (Data.Array.Repa.zipWith (,) uA f') id update
              where
                update get c@(sh :. j :. i) =
                    if (j>=1 && j<=jmax) then
-                      if (i==0) then fsta $ get (sh :. j :. 0)
-                      else if (i==imax) then fsta $ get (sh :. j :. imax)
-                      else snda $ get (sh :. j :. i)
+                      if (i==0) then fst $ get (sh :. j :. 0)
+                      else if (i==imax) then fst $ get (sh :. j :. imax)
+                      else snd $ get (sh :. j :. i)
                    else
-                       snda $ get (sh :. j :. i)
-       g'' = suspendedComputeP $ traverse (Data.Array.Repa.zipWith (:*:) vA g') id update
+                       snd $ get (sh :. j :. i)
+       g'' = suspendedComputeP $ traverse (Data.Array.Repa.zipWith (,) vA g') id update
              where
                update get c@(sh :. j :. i) =
                    if (i>=1 && i<=imax) then
-                      if (j==0) then fsta $ get (sh :. 0 :. i)
-                      else if (j==jmax) then fsta $ get (sh :. jmax :. i)
-                      else snda $ get (sh :. j :. i)
+                      if (j==0) then fst $ get (sh :. 0 :. i)
+                      else if (j==jmax) then fst $ get (sh :. jmax :. i)
+                      else snd $ get (sh :. j :. i)
                    else
-                       snda $ get (sh :. j :. i)
+                       snd $ get (sh :. j :. i)
     in
       (f'', g'')
 
 compute_rhs f g rhs flag del_t =
-    suspendedComputeP $ traverse (Data.Array.Repa.zipWith (:*:) flag
-              (Data.Array.Repa.zipWith (:*:) rhs
-               (Data.Array.Repa.zipWith (:*:) f g))) id update
+    suspendedComputeP $ traverse (Data.Array.Repa.zipWith (,) flag
+              (Data.Array.Repa.zipWith (,) rhs
+               (Data.Array.Repa.zipWith (,) f g))) id update
     where
       update get c@(sh :. j :. i) =
           if (inBounds i j && (((flag $ get c) .&. _cf) /= 0)) then
@@ -162,10 +163,10 @@ compute_rhs f g rhs flag del_t =
           else
               rhs $ get (sh :. j :. i)
             where
-              flag = fsta
-              rhs = fsta . snda
-              f = fsta . snda . snda
-              g = snda . snda . snda
+              flag = fst
+              rhs = fst . snd
+              f = fst . snd . snd
+              g = snd . snd . snd
 
 
 poisson
@@ -179,17 +180,19 @@ poisson p rhs flag ifluid res =
         beta_2 = -omega/(2.0*(rdx2+rdy2))
 
         -- Calculate sum of squares
+        sumSquares :: Double
         sumSquares =
-            snda $
-              toScalar
-                (foldS total (0 :*: 0.0)
-                  (foldS square (0 :*: 0.0)
-                    (ignoreBoundary (Data.Array.Repa.zipWith (:*:) flag p))))
-        total (_ :*: y) (_ :*: x) = (0 :*: (y + x))
-        square (_ :*: y) x  = if ((fsta x) .&. _cf /= 0) then
-                          0 :*: (y+((snda x)**2))
-                      else
-                          0 :*: y
+            snd $ toScalar $ sumSquaresCompute sumSquaresInner
+        sumSquaresInner :: Array D DIM2 (Int, Double)
+        sumSquaresInner = ignoreBoundary $ Data.Array.Repa.zipWith (,) flag p
+        sumSquaresCompute :: Array D DIM2 (Int, Double) -> Array U DIM0 (Int, Double)
+        sumSquaresCompute = foldS total (0, 0.0) . foldS square (0, 0.0)
+
+        total (_, y) (_, x) = (0, (y + x))
+        square (_, y) x  =
+            if   ((fst x) .&. _cf /= 0)
+            then (0, (y+((snd x)**2)))
+            else (0, y)
 
         p0 = sqrt (sumSquares/((fromIntegral ifluid)::Double))
         p0' = if (p0 < 0.0001) then 1.0 else p0
@@ -197,14 +200,14 @@ poisson p rhs flag ifluid res =
         -- Partial computation of residual
         computeRes p p0 =
           let
-            res' = traverse (Data.Array.Repa.zipWith (:*:) flag
-                                     (Data.Array.Repa.zipWith (:*:) p rhs)) id update
+            res' = traverse (Data.Array.Repa.zipWith (,) flag
+                                     (Data.Array.Repa.zipWith (,) p rhs)) id update
             res = sumAllS $ res'
             update get c@(sh :. j :. i) =
                 let
-                   flag = fsta
-                   p = fsta . snda
-                   rhs = snda . snda
+                   flag = fst
+                   p = fst . snd
+                   rhs = snd . snd
                 in
                    if ((inBounds i j) && ((flag $ get c) .&. _cf /= 0)) then
                      ((((obstacle flag get (sh :. j :. (i+1)))*
@@ -223,14 +226,14 @@ poisson p rhs flag ifluid res =
 
         -- Red/Black SOR-iteration (compute new p)
         iterop rb p rhs flag =
-                    traverse (Data.Array.Repa.zipWith (:*:) flag
-                            (Data.Array.Repa.zipWith (:*:) p rhs))
+                    traverse (Data.Array.Repa.zipWith (,) flag
+                            (Data.Array.Repa.zipWith (,) p rhs))
                             id (update rb)
         update rb get c@(sh :. j :. i) =
             let
-              flag = fsta
-              p = fsta . snda
-              rhs = snda . snda
+              flag = fst
+              p = fst . snd
+              rhs = snd . snd
               -- CSE the central element access
               !_c = get $ c
             in
@@ -302,14 +305,15 @@ poisson p rhs flag ifluid res =
                 p'' = iterop 1 p' rhs flag
                 -- res
                 res' = computeRes p'' p0'
+                p''' = suspendedComputeP p''
             in
               if (iter>=itermax) then
                   (p, res, iter)
               else 
                   if (res'<eps) then
-                      (p'', res', iter)
+                      (p''', res', iter)
                   else
-                      sorIterate (iter+1) p'' res'
+                      sorIterate (iter+1) p''' res'
 
     in
       sorIterate 0 p res
@@ -317,16 +321,16 @@ poisson p rhs flag ifluid res =
 
 update_velocity u v f g p flag del_t =
     let
-        u' = suspendedComputeP $ traverse (Data.Array.Repa.zipWith (:*:) flag
-                              (Data.Array.Repa.zipWith (:*:) p 
-                              (Data.Array.Repa.zipWith (:*:) f u))) id update
+        u' = suspendedComputeP $ traverse (Data.Array.Repa.zipWith (,) flag
+                              (Data.Array.Repa.zipWith (,) p
+                              (Data.Array.Repa.zipWith (,) f u))) id update
              where
                update get c@(sh :. j :. i) =
                    let
-                       flag = fsta
-                       p = fsta . snda
-                       f = fsta . snda . snda
-                       u = snda . snda . snda
+                       flag = fst
+                       p = fst . snd
+                       f = fst . snd . snd
+                       u = snd . snd . snd
                    in
                      if (inBounds i j && (i<=(imax-1))
                                       && ((flag $ get (sh :. j :. i)) .&. _cf /= 0)
@@ -335,16 +339,16 @@ update_velocity u v f g p flag del_t =
                                      -(p $ get (sh :. j :. i)))*del_t/delx
                      else
                          u $ get c
-        v' = suspendedComputeP $ traverse (Data.Array.Repa.zipWith (:*:) flag
-                              (Data.Array.Repa.zipWith (:*:) p
-                              (Data.Array.Repa.zipWith (:*:) g v))) id update
+        v' = suspendedComputeP $ traverse (Data.Array.Repa.zipWith (,) flag
+                              (Data.Array.Repa.zipWith (,) p
+                              (Data.Array.Repa.zipWith (,) g v))) id update
              where
                update get c@(sh :. j :. i) =
                    let
-                       flag = fsta
-                       p = fsta . snda
-                       g = fsta . snda . snda
-                       v = snda . snda . snda
+                       flag = fst
+                       p = fst . snd
+                       g = fst . snd . snd
+                       v = snd . snd . snd
                    in
                      if (inBounds i j && (j<=(jmax-1))
                                       && ((flag $ get (sh :. j :. i)) .&. _cf /= 0)

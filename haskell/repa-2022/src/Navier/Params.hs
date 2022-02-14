@@ -36,9 +36,9 @@ inBounds i j = (i>0) && (i<(imax+1)) && (j>0) && (j<(jmax+1))
 intCast :: Int -> Double
 intCast = fromInteger . toInteger
 
-ignoreBoundary :: Unbox a => Array U DIM2 a -> Array U DIM2 a
+ignoreBoundary :: (Unbox a, Source r a) => Array r DIM2 a -> Array D DIM2 a
 ignoreBoundary arr = let Z :. height :. width = extent arr
-                     in computeS $ backpermute (Z :. (height-2) :. (width-2))
+                     in backpermute (Z :. (height-2) :. (width-2))
                            (\(sh :. y :. x) -> (sh :. (y+1) :. (x+1))) arr
 
 {-# INLINE obs #-}

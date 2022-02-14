@@ -4,6 +4,7 @@ module Navier.Init where
 
 import Prelude hiding ( traverse )
 
+import Common
 import Data.Bits
 import Data.Array.Repa
 import Data.Array.Repa.Eval ( suspendedComputeP )
@@ -70,6 +71,3 @@ init_flag imax jmax delx dely =
                                      then 1+y else y
                          total y x = y + x
    in (flag''', ibound)
-  where
-    toScalar :: Array U DIM0 Int -> Int
-    toScalar arr = index arr Z

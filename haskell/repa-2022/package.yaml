@@ -1,16 +1,6 @@
 name: repa2022
 version: "0.1.0"
 
-dependencies:
-- base
-- repa
-- vector
-- template-haskell
-- directory
-
-library:
-  source-dirs: src
-
 # mostly Alexis King's 2018 recommended defaults
 # (most can be replaced with GHC 9.2's GHC2021 language extension
 default-extensions:
@@ -50,3 +40,25 @@ default-extensions:
 - UndecidableInstances # honestly fine but...
 - MagicHash # pretty much syntactic, but too weird
 - ScopedTypeVariables # probs dangerous to have as default
+
+dependencies:
+- base
+- repa
+- vector
+- template-haskell
+- directory
+
+library:
+  source-dirs: src
+
+executables:
+  repa2022:
+    source-dirs: app
+    main: Main.hs
+    ghc-options:
+    - -Wall
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - repa2022

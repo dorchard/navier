@@ -78,7 +78,7 @@ mkPat (l, x, y) = varP $ mkName l
 mkPats vars (l, _, _) = Prelude.map (varP . mkName) (tie vars (repeat l))
 
 inter [v] l = varP $ mkName (v++l)
-inter (v:vs) l = infixP (varP $ mkName (v++l)) (mkName ":*:") (inter vs l)
+inter (v:vs) l = infixP (varP $ mkName (v++l)) (mkName ",") (inter vs l)
 
 --Prelude.map (varP . mkName) (tie vars (repeat l))
 
