@@ -37,4 +37,4 @@ make
 ```
 
 # References 
-[1]: Michael Griebel, Thomas Dornseifer, Tilman Neunhoeffer, Numerical Simulation in Fluid Dynamics, SIAM, 1998. http://people.sc.fsu.edu/~jburkardt/cpp_src/nast2d/nast2d.html
+[1]: Michael Griebel, Thomas Dornseifer, Tilman Neunhoeffer, Numerical Simulation in Fluid Dynamics, SIAM, 1998. https://people.math.sc.edu/Burkardt/cpp_src/nast2d/nast2d.html
